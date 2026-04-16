@@ -84,7 +84,7 @@ function Chessboard({
             }
 
             case 'rook': {
-                const moves = []
+                const rookMoves = []
                 const dirs = [[1,0],[-1,0],[0,1],[0,-1]]
 
                 for (const [dr, dc] of dirs) {
@@ -93,10 +93,10 @@ function Chessboard({
 
                     while (r >= 0 && r < 8 && c >= 0 && c < 8) {
                         if (!board[r][c]) {
-                            moves.push([r, c])
+                            rookMoves.push([r, c])
                         } else {
                             if (!board[r][c].startsWith(color)) {
-                                moves.push([r, c])
+                                rookMoves.push([r, c])
                             }
                             break
                         }
@@ -105,11 +105,11 @@ function Chessboard({
                     }
                 }
 
-                return moves
+                return rookMoves
             }
 
             case 'bishop': {
-                const moves = []
+                const bishopMoves = []
                 const dirs = [[1,1],[1,-1],[-1,1],[-1,-1]]
 
                 for (const [dr, dc] of dirs) {
@@ -118,10 +118,10 @@ function Chessboard({
 
                     while (r >= 0 && r < 8 && c >= 0 && c < 8) {
                         if (!board[r][c]) {
-                            moves.push([r, c])
+                            bishopMoves.push([r, c])
                         } else {
                             if (!board[r][c].startsWith(color)) {
-                                moves.push([r, c])
+                                bishopMoves.push([r, c])
                             }
                             break
                         }
@@ -130,11 +130,11 @@ function Chessboard({
                     }
                 }
 
-                return moves
+                return bishopMoves
             }
 
             case 'knight': {
-                const moves = []
+                const knightMoves = []
                 const dirs = [
                     [2,1],[2,-1],[-2,1],[-2,-1],
                     [1,2],[1,-2],[-1,2],[-1,-2]
@@ -146,12 +146,12 @@ function Chessboard({
 
                     if (r >= 0 && r < 8 && c >= 0 && c < 8) {
                         if (!board[r][c] || !board[r][c].startsWith(color)) {
-                            moves.push([r, c])
+                            knightMoves.push([r, c])
                         }
                     }
                 }
 
-                return moves
+                return knightMoves
             }
 
             case 'queen':
@@ -161,7 +161,7 @@ function Chessboard({
                 ]
 
             case 'king': {
-                const moves = []
+                const kingMoves = []
                 const dirs = [
                     [1,0],[-1,0],[0,1],[0,-1],
                     [1,1],[1,-1],[-1,1],[-1,-1]
@@ -173,29 +173,29 @@ function Chessboard({
 
                     if (r >= 0 && r < 8 && c >= 0 && c < 8) {
                         if (!board[r][c] || !board[r][c].startsWith(color)) {
-                            moves.push([r, c])
+                            kingMoves.push([r, c])
                         }
                     }
                 }
 
                 if (color === 'white') {
                     if (castlingRights.white.kingside && !board[7][5] && !board[7][6]) {
-                        moves.push([7, 6]);
+                        kingMoves.push([7, 6]);
                     }
                     if (castlingRights.white.queenside && !board[7][1] && !board[7][2] && !board[7][3]) {
-                        moves.push([7, 2]);
+                        kingMoves.push([7, 2]);
                     }
                 }
                 if (color === 'black') {
                     if (castlingRights.black.kingside && !board[0][5] && !board[0][6]) {
-                        moves.push([0, 6]);
+                        kingMoves.push([0, 6]);
                     }
                     if (castlingRights.black.queenside && !board[0][1] && !board[0][2] && !board[0][3]) {
-                        moves.push([0, 2]);
+                        kingMoves.push([0, 2]);
                     }
                 }
 
-                return moves
+                return kingMoves
             }
         }
     }
