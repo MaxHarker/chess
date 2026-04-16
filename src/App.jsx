@@ -21,12 +21,18 @@ function App() {
     black: {kingside: true, queenside: true}
   })
   const [enPassantTarget, setEnPassantTarget] = useState(null)
+  const [highlights, setHighlights] = useState([]);
 
   return (
     <>
-      <Chessboard board={board} setBoard={setBoard} turn={turn} setTurn={setTurn} castlingRights={castlingRights} setCastlingRights={setCastlingRights} enPassantTarget={enPassantTarget} setEnPassantTarget={setEnPassantTarget} />
+      <Chessboard board={board} setBoard={setBoard} 
+      turn={turn} setTurn={setTurn} 
+      castlingRights={castlingRights} setCastlingRights={setCastlingRights} 
+      enPassantTarget={enPassantTarget} setEnPassantTarget={setEnPassantTarget} 
+      highlights={highlights} setHighlights={setHighlights} />
     </>
   )
 }
+
 
 export default App
