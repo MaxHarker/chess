@@ -1,0 +1,87 @@
+.game-container {
+    position: relative;
+}
+
+.game-over-overlay {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(3px);
+
+    animation: fadeIn 1s ease-out;
+    z-index: 10;
+}
+
+.game-over-modal {
+    background: linear-gradient(145deg, #ffffff, #f2f2f2);
+    padding: 32px 44px;
+    border-radius: 16px;
+
+    text-align: center;
+
+    animation: popIn 0.5s ease-out;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.25),
+        0 2px 6px rgba(0, 0, 0, 0.15);
+
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.game-over-modal h1 {
+    font-size: 2rem;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+    font-weight: 700;
+
+    color: #222;
+}
+
+.game-over-modal button {
+    margin-top: 10px;
+    padding: 10px 18px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #222;
+    color: white;
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.game-over-modal button:hover {
+    transform: translateY(-2px);
+    background: #000;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+}
+
+.game-over-modal button:active {
+    transform: translateY(0px);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.85);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

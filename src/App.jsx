@@ -1,38 +1,74 @@
-import { useState } from 'react'
-import './App.css'
+import { Routes, Route } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { initialGameState } from './logic/initialGameState'
 import Chessboard from './components/Chessboard'
+import GameOver from './components/GameOver'
+import TitleScreen from './components/TitleScreen'
+import { hasLegalMoves, isKingInCheck } from './logic/chessLogic'
 
 function App() {
-  const startingBoard = [
-    ['black_rook', 'black_knight', 'black_bishop', 'black_queen', 'black_king', 'black_bishop', 'black_knight', 'black_rook'],
-    Array(8).fill('black_pawn'),
-    Array(8).fill(null),
-    Array(8).fill(null),
-    Array(8).fill(null),
-    Array(8).fill(null),
-    Array(8).fill('white_pawn'),
-    ['white_rook', 'white_knight', 'white_bishop', 'white_queen', 'white_king', 'white_bishop', 'white_knight', 'white_rook']
-  ]
+    const [gameState, setGameState] = useState(initialGameState)
 
-  const [board, setBoard] = useState(() => startingBoard)
-  const [turn, setTurn] = useState('white')
-  const [castlingRights, setCastlingRights] = useState({
-    white: {kingside: true, queenside: true}, 
-    black: {kingside: true, queenside: true}
-  })
-  const [enPassantTarget, setEnPassantTarget] = useState(null)
-  const [highlights, setHighlights] = useState([]);
+    useEffect(() => {
+        if (gameState.status !== 'playing') return
 
-  return (
-    <>
-      <Chessboard board={board} setBoard={setBoard} 
-      turn={turn} setTurn={setTurn} 
-      castlingRights={castlingRights} setCastlingRights={setCastlingRights} 
-      enPassantTarget={enPassantTarget} setEnPassantTarget={setEnPassantTarget} 
-      highlights={highlights} setHighlights={setHighlights} />
-    </>
-  )
+        const turn = gameState.turn
+
+        const hasMoves = hasLegalMoves(turn, gameState)
+        const inCheck = isKingInCheck(turn, gameState)
+
+        if (!hasMoves && inCheck) {
+            setGameState(prev => ({
+                ...prev,
+                status: 'checkmate'
+            }))
+        }
+
+        if (!hasMoves && !inCheck) {
+            setGameState(prev => ({
+                ...prev,
+                status: 'stalemate'
+            }))
+        }
+    }, [gameState.board, gameState.turn])
+
+    const restartGame = () => {
+        setGameState(initialGameState)
+    }
+
+    const isGameOver =
+        gameState.status === 'checkmate' ||
+        gameState.status === 'stalemate'
+
+    return (
+        <Routes>
+            {/* 🎬 Title Screen */}
+            <Route
+                path="/"
+                element={<TitleScreen />}
+            />
+
+            {/* ♟️ Game Screen */}
+            <Route
+                path="/game"
+                element={
+                    <div className="game-container">
+                        <Chessboard
+                            gameState={gameState}
+                            setGameState={setGameState}
+                        />
+
+                        {isGameOver && (
+                            <GameOver
+                                status={gameState.status}
+                                onRestart={restartGame}
+                            />
+                        )}
+                    </div>
+                }
+            />
+        </Routes>
+    )
 }
-
 
 export default App

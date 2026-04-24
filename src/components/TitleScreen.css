@@ -1,0 +1,39 @@
+.title-screen {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #333333;
+    color: white;
+
+    animation: fadeIn 0.5s ease-out;
+}
+
+.title-screen h1 {
+    font-size: 100px;
+    margin-bottom: 50px;
+}
+
+.title-screen button {
+    margin-top: 20px;
+    padding: 12px 24px;
+
+    font-size: 16px;
+    cursor: pointer;
+
+    border: none;
+    border-radius: 8px;
+
+    background: white;
+    color: black;
+
+    transition: transform 0.15s ease;
+}
+
+.title-screen button:hover {
+    transform: scale(1.05);
+}
