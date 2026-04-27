@@ -95,6 +95,7 @@ function Chessboard({ gameState, setGameState }) {
 
     const handleDragStart = (e, row, col) => {
         if (gameState.status !== 'playing') return
+        
         const piece = gameState.board[row][col]
         if (!piece) return
 

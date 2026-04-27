@@ -4,6 +4,7 @@ import { initialGameState } from './logic/initialGameState'
 import Chessboard from './components/Chessboard'
 import GameOver from './components/GameOver'
 import TitleScreen from './components/TitleScreen'
+import PromotionModal from './components/PromotionModal'
 import { hasLegalMoves, isKingInCheck } from './logic/chessLogic'
 
 function App() {
@@ -40,6 +41,17 @@ function App() {
         gameState.status === 'checkmate' ||
         gameState.status === 'stalemate'
 
+    function handlePromotion(piece) {
+        const newBoard = gameState.board.map(r => r.slice())
+        newBoard[gameState.pendingPromotion.row][gameState.pendingPromotion.col] = `${gameState.pendingPromotion.color}_${piece}`
+        setGameState(prev => ({
+            ...prev,
+            board: newBoard,
+            pendingPromotion: null,
+            turn: prev.turn === 'white' ? 'black' : 'white',
+        }))
+    }
+
     return (
         <Routes>
             {/* 🎬 Title Screen */}
@@ -62,6 +74,13 @@ function App() {
                             <GameOver
                                 status={gameState.status}
                                 onRestart={restartGame}
+                            />
+                        )}
+
+                        {gameState.pendingPromotion && (
+                            <PromotionModal
+                                color={gameState.pendingPromotion.color}
+                                onSelect={handlePromotion}
                             />
                         )}
                     </div>

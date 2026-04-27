@@ -20,7 +20,9 @@ export const initialGameState = {
     enPassantTarget: null,
 
     selected: null,
-    // row, col, moves
+    // row, col, moves -- currently selected piece and its legal moves
 
-    status: 'playing'
+    status: 'playing',
+
+    pendingPromotion: null
 }

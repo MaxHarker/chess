@@ -1,13 +1,7 @@
-export function validMoves(
-    piece,
-    color,
-    row,
-    col,
-    gameState
-) {
+export function validMoves(piece, color, row, col, gameState) {
     const { board, enPassantTarget, castlingRights } = gameState
 
-    function getSlidingMoves(dirs, row, col, color, board) {
+    function getSlidingMoves(dirs) {
         const moves = []
 
         for (const [dr, dc] of dirs) {
@@ -30,19 +24,20 @@ export function validMoves(
 
         return moves
     }
-    switch (piece) {
-        case 'pawn': {
-            const pawnMoves = []
 
+    switch (piece) {
+
+        case 'pawn': {
+            const moves = []
             const dir = color === 'white' ? -1 : 1
             const startRow = color === 'white' ? 6 : 1
             const enemy = color === 'white' ? 'black' : 'white'
 
-            if (!board[row + dir][col]) {
-                pawnMoves.push([row + dir, col])
+            if (board[row + dir]?.[col] === null) {
+                moves.push([row + dir, col])
 
-                if (row === startRow && !board[row + 2 * dir][col]) {
-                    pawnMoves.push([row + 2 * dir, col])
+                if (row === startRow && board[row + 2 * dir]?.[col] === null) {
+                    moves.push([row + 2 * dir, col])
                 }
             }
 
@@ -51,7 +46,7 @@ export function validMoves(
                 const c = col + dc
 
                 if (board[r]?.[c] && board[r][c].startsWith(enemy)) {
-                    pawnMoves.push([r, c])
+                    moves.push([r, c])
                 }
             }
 
@@ -61,14 +56,14 @@ export function validMoves(
                 Math.abs(col - enPassantTarget.col) === 1 &&
                 row === enPassantTarget.row - dir
             ) {
-                pawnMoves.push([enPassantTarget.row, enPassantTarget.col])
+                moves.push([enPassantTarget.row, enPassantTarget.col])
             }
 
-            return pawnMoves
+            return moves
         }
 
         case 'knight': {
-            const knightMoves = []
+            const moves = []
             const dirs = [
                 [2,1],[2,-1],[-2,1],[-2,-1],
                 [1,2],[1,-2],[-1,2],[-1,-2]
@@ -80,122 +75,232 @@ export function validMoves(
 
                 if (r >= 0 && r < 8 && c >= 0 && c < 8) {
                     if (!board[r][c] || !board[r][c].startsWith(color)) {
-                        knightMoves.push([r, c])
+                        moves.push([r, c])
                     }
                 }
             }
 
-            return knightMoves
+            return moves
         }
 
         case 'king': {
-            const kingMoves = []
+            const moves = []
             const dirs = [
                 [1,0],[-1,0],[0,1],[0,-1],
                 [1,1],[1,-1],[-1,1],[-1,-1]
             ]
 
+            // normal king moves
             for (const [dr, dc] of dirs) {
                 const r = row + dr
                 const c = col + dc
 
                 if (r >= 0 && r < 8 && c >= 0 && c < 8) {
                     if (!board[r][c] || !board[r][c].startsWith(color)) {
-                        kingMoves.push([r, c])
+                        moves.push([r, c])
                     }
                 }
             }
 
-            if (color === 'white') {
-                if (castlingRights.white.kingside && !board[7][5] && !board[7][6]) {
-                    kingMoves.push([7, 6])
+            // =========================
+            // CASTLING (FIXED VERSION)
+            // =========================
+
+            const enemy = color === 'white' ? 'black' : 'white'
+
+            const backRank = color === 'white' ? 7 : 0
+            const rights = castlingRights[color]
+
+            const safe = (r, c) =>
+                !isSquareAttacked(r, c, enemy, gameState)
+
+            // KING must not be in check
+            const kingInCheck = isSquareAttacked(row, col, enemy, gameState)
+
+            if (!kingInCheck) {
+
+                // -----------------
+                // KING SIDE CASTLE
+                // -----------------
+                if (
+                    rights.kingside &&
+                    !board[backRank][5] &&
+                    !board[backRank][6] &&
+                    safe(backRank, 5) &&
+                    safe(backRank, 6)
+                ) {
+                    moves.push([backRank, 6])
                 }
-                if (castlingRights.white.queenside && !board[7][1] && !board[7][2] && !board[7][3]) {
-                    kingMoves.push([7, 2])
+
+                // -----------------
+                // QUEEN SIDE CASTLE
+                // -----------------
+                if (
+                    rights.queenside &&
+                    !board[backRank][1] &&
+                    !board[backRank][2] &&
+                    !board[backRank][3] &&
+                    safe(backRank, 3) &&
+                    safe(backRank, 2)
+                ) {
+                    moves.push([backRank, 2])
                 }
             }
 
-            if (color === 'black') {
-                if (castlingRights.black.kingside && !board[0][5] && !board[0][6]) {
-                    kingMoves.push([0, 6])
-                }
-                if (castlingRights.black.queenside && !board[0][1] && !board[0][2] && !board[0][3]) {
-                    kingMoves.push([0, 2])
-                }
-            }
-
-            return kingMoves
+            return moves
         }
 
         case 'rook':
-            return getSlidingMoves(
-                [[1,0],[-1,0],[0,1],[0,-1]],
-                row,
-                col,
-                color,
-                board
-            )
+            return getSlidingMoves([[1,0],[-1,0],[0,1],[0,-1]])
 
         case 'bishop':
-            return getSlidingMoves(
-                [[1,1],[1,-1],[-1,1],[-1,-1]],
-                row,
-                col,
-                color,
-                board
-            )
+            return getSlidingMoves([[1,1],[1,-1],[-1,1],[-1,-1]])
 
         case 'queen':
-            return getSlidingMoves(
-                [
-                    [1,0],[-1,0],[0,1],[0,-1], // rook dirs
-                    [1,1],[1,-1],[-1,1],[-1,-1] // bishop dirs
-                ],
-                row,
-                col,
-                color,
-                board
-            )
+            return getSlidingMoves([
+                [1,0],[-1,0],[0,1],[0,-1],
+                [1,1],[1,-1],[-1,1],[-1,-1]
+            ])
     }
 }
 
-export function tryMove(
-    fromRow,
-    fromCol,
-    toRow,
-    toCol,
-    gameState
-) {
-    const {
-        board,
-        turn,
-        castlingRights,
-        enPassantTarget
-    } = gameState
+export function isSquareAttacked(row, col, byColor, gameState) {
+
+    function rayAttacks(r, c, targetR, targetC, type, board) {
+        const dirs =
+            type === 'rook'
+                ? [[1,0],[-1,0],[0,1],[0,-1]]
+                : type === 'bishop'
+                ? [[1,1],[1,-1],[-1,1],[-1,-1]]
+                : [
+                    [1,0],[-1,0],[0,1],[0,-1],
+                    [1,1],[1,-1],[-1,1],[-1,-1]
+                ]
+
+        for (const [dr, dc] of dirs) {
+            let nr = r + dr
+            let nc = c + dc
+
+            while (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
+                if (nr === targetR && nc === targetC) return true
+                if (board[nr][nc]) break
+                nr += dr
+                nc += dc
+            }
+        }
+
+        return false
+    }
+
+    const { board } = gameState
+
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            const piece = board[r][c]
+            if (!piece) continue
+
+            const [color, type] = piece.split('_')
+            if (color !== byColor) continue
+
+            switch (type) {
+
+                case 'pawn': {
+                    const dir = color === 'white' ? -1 : 1
+                    if (
+                        r + dir === row &&
+                        (c + 1 === col || c - 1 === col)
+                    ) return true
+                    break
+                }
+
+                case 'knight': {
+                    const dirs = [
+                        [2,1],[2,-1],[-2,1],[-2,-1],
+                        [1,2],[1,-2],[-1,2],[-1,-2]
+                    ]
+
+                    if (dirs.some(([dr, dc]) =>
+                        r + dr === row && c + dc === col
+                    )) return true
+
+                    break
+                }
+
+                case 'bishop':
+                case 'rook':
+                case 'queen':
+                    if (rayAttacks(r, c, row, col, type, board)) return true
+                    break
+
+                case 'king':
+                    if (Math.abs(r - row) <= 1 && Math.abs(c - col) <= 1) {
+                        return true
+                    }
+                    break
+            }
+        }
+    }
+
+    return false
+}
+
+export function findKing(color, board) {
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            if (board[r][c] === `${color}_king`) {
+                return [r, c]
+            }
+        }
+    }
+    return null
+}
+
+export function isKingInCheck(color, gameState) {
+    const { board } = gameState
+    const king = findKing(color, board)
+    if (!king) return false
+
+    const [kr, kc] = king
+    const enemy = color === 'white' ? 'black' : 'white'
+
+    return isSquareAttacked(kr, kc, enemy, gameState)
+}
+
+export function legalMoves(piece, color, row, col, gameState) {
+    const moves = validMoves(piece, color, row, col, gameState)
+
+    return moves.filter(([toRow, toCol]) => {
+        const newBoard = gameState.board.map(r => r.slice())
+
+        newBoard[toRow][toCol] = newBoard[row][col]
+        newBoard[row][col] = null
+
+        const newState = { ...gameState, board: newBoard }
+
+        return !isKingInCheck(color, newState)
+    })
+}
+
+export function tryMove(fromRow, fromCol, toRow, toCol, gameState) {
+    const { board, turn, castlingRights, enPassantTarget } = gameState
 
     const piece = board[fromRow][fromCol]
     if (!piece) return null
 
     const [color, type] = piece.split('_')
 
-    const moves = legalMoves(
-        type,
-        color,
-        fromRow,
-        fromCol,
-        gameState
-    )
+    const moves = legalMoves(type, color, fromRow, fromCol, gameState)
 
     const isValid = moves.some(([r, c]) => r === toRow && c === toCol)
     if (!isValid) return null
 
-    // --- MOVE PIECE ---
     const newBoard = board.map(r => r.slice())
     newBoard[toRow][toCol] = piece
     newBoard[fromRow][fromCol] = null
 
     // --- EN PASSANT ---
     let newEnPassantTarget = null
+
     const isEnPassant =
         type === 'pawn' &&
         enPassantTarget &&
@@ -213,6 +318,16 @@ export function tryMove(
             row: (fromRow + toRow) / 2,
             col: fromCol,
             color: color === 'white' ? 'black' : 'white'
+        }
+    }
+
+    // --- PROMOTION ---
+    if (type === 'pawn' && (toRow === 0 || toRow === 7)) {
+        return {
+            ...gameState,
+            pendingPromotion: { row: toRow, col: toCol, color },
+            board: newBoard,
+            selected: null
         }
     }
 
@@ -257,7 +372,6 @@ export function tryMove(
         }
     }
 
-    // --- RETURN NEW STATE ---
     return {
         ...gameState,
         board: newBoard,
@@ -266,62 +380,6 @@ export function tryMove(
         selected: null,
         turn: turn === 'white' ? 'black' : 'white'
     }
-}
-
-export function findKing(color, board){
-    for (let r = 0; r < 8; r++) {
-        for (let c = 0; c < 8; c++) {
-            if (board[r][c] === `${color}_king`) {
-                return [r, c]
-            }
-        }
-    }
-    return null
-}
-
-export function isKingInCheck(color, gameState) {
-    const { board } = gameState
-    let kingPosition = findKing(color, board)
-    if (!kingPosition) return false
-
-    const [kingRow, kingCol] = kingPosition
-    for (let r = 0; r < 8; r++) {
-        for (let c = 0; c < 8; c++) {
-            const piece = board[r][c]
-            if (piece && piece.split('_')[0] !== color) {
-                const [enemyColor, enemyType] = piece.split('_')
-                const moves = validMoves(enemyType, enemyColor, r, c, gameState)
-                if (moves.some(([mr, mc]) => mr === kingRow && mc === kingCol)) {
-                    return true
-                }
-            }
-        }
-    }
-    return false
-}
-
-export function legalMoves(
-    piece,
-    color,
-    row,
-    col,
-    gameState
-) {
-    const moves = validMoves(piece, color, row, col, gameState)
-
-    return moves.filter(([toRow, toCol]) => {
-        // simulate move
-        const newBoard = gameState.board.map(r => r.slice())
-        newBoard[toRow][toCol] = newBoard[row][col]
-        newBoard[row][col] = null
-
-        const newState = {
-            ...gameState,
-            board: newBoard
-        }
-
-        return !isKingInCheck(color, newState)
-    })
 }
 
 export function hasLegalMoves(color, gameState) {
@@ -333,20 +391,16 @@ export function hasLegalMoves(color, gameState) {
             if (!piece || !piece.startsWith(color)) continue
 
             const [, type] = piece.split('_')
-
             const moves = validMoves(type, color, r, c, gameState)
 
             for (const [toRow, toCol] of moves) {
-                const newBoard = board.map(row => row.slice())
+                const newBoard = board.map(r => r.slice())
                 newBoard[toRow][toCol] = piece
                 newBoard[r][c] = null
 
-                const newState = {
-                    ...gameState,
-                    board: newBoard
-                }
-                // if this move escapes check → not checkmate
-                if (!isKingInCheck(color, newState, validMoves)) {
+                const newState = { ...gameState, board: newBoard }
+
+                if (!isKingInCheck(color, newState)) {
                     return true
                 }
             }
