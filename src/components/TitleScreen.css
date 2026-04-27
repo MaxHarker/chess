@@ -16,6 +16,7 @@
 .title-screen h1 {
     font-size: 100px;
     margin-bottom: 50px;
+    font-family: "Playfair Display", serif;
 }
 
 .title-screen button {
@@ -26,7 +27,7 @@
     cursor: pointer;
 
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
 
     background: white;
     color: black;

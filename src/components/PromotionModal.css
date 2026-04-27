@@ -1,23 +1,120 @@
+/* BACKDROP */
 .modal-backdrop {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.6);
 
     display: flex;
     justify-content: center;
     align-items: center;
+
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(2px);
+
+    z-index: 10;
 }
 
+/* MODAL */
 .modal {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
+    background: linear-gradient(145deg, #ffffff, #f1f1f1);
+    padding: 5px 40px 25px 40px;
+    border-radius: 16px;
+
+    text-align: center;
+
+    animation: popIn 0.2s ease;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.25),
+        0 2px 6px rgba(0, 0, 0, 0.15);
+
+    border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.options button {
-    margin: 5px;
-    padding: 10px;
+.modal h2 {
+    font-size: "Playfair Display", serif;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* GRID LAYOUT */
+.options {
+    display: grid;
+    grid-template-columns: repeat(2, 90px);
+    gap: 15px;
+    justify-content: center;
+}
+
+/* Default (queen highlighted) */
+.options button:first-child {
+    transform: translateY(-4px);
+    border-color: #4CAF50;
+    background: #ffffff;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* When hovering ANY button, remove highlight from others */
+.options:hover button:not(:hover) {
+    transform: none;
+    border-color: transparent;
+    background: #e4e4e4;
+    box-shadow: none;
+}
+
+/* Keep hovered one highlighted */
+.options button:hover {
+    transform: translateY(-4px);
+    border-color: #4CAF50;
+    background: #ffffff;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* PIECE BUTTON */
+.piece-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background: #e4e4e4;
+    border: 2px solid transparent;
+    border-radius: 12px;
+
+    padding: 12px;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+/* IMAGE */
+.piece-option img {
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+}
+
+/* LABEL */
+.piece-option span {
+    margin-top: 6px;
+    font-size: 0.85rem;
+    text-transform: capitalize;
+}
+
+/* CLICK */
+.piece-option:active {
+    transform: translateY(0px);
+}
+
+/* ANIMATION */
+@keyframes popIn {
+    from {
+        transform: scale(0.85);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
