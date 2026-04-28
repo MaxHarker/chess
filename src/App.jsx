@@ -1,14 +1,20 @@
 import { Routes, Route } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { initialGameState } from './logic/initialGameState'
+import { hasLegalMoves, isKingInCheck } from './logic/chessLogic'
+
 import Chessboard from './components/Chessboard'
 import GameOver from './components/GameOver'
 import TitleScreen from './components/TitleScreen'
 import PromotionModal from './components/PromotionModal'
-import { hasLegalMoves, isKingInCheck } from './logic/chessLogic'
+
+import win from './assets/win.mp3'
+import loss from './assets/loss.mp3'
 
 function App() {
     const [gameState, setGameState] = useState(initialGameState)
+    const winAudio = new Audio(win)
+    const lossAudio = new Audio(loss)
 
     useEffect(() => {
         if (gameState.status !== 'playing') return
@@ -23,6 +29,7 @@ function App() {
                 ...prev,
                 status: 'checkmate'
             }))
+            turn === 'white' ? lossAudio.play() : winAudio.play()
         }
 
         if (!hasMoves && !inCheck) {
