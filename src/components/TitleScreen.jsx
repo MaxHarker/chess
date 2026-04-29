@@ -11,6 +11,7 @@ function TitleScreen() {
             <button onClick={() => navigate('/game')}>
                 Start Game
             </button>
+            <h3>Version 1.0.0</h3>
         </div>
     )
 }

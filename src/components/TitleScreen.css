@@ -38,3 +38,10 @@
 .title-screen button:hover {
     transform: scale(1.05);
 }
+
+.title-screen h3 {
+    position: absolute;
+    bottom: 20px;
+    font-family: "Playfair Display", serif;
+    color: #cccccc;
+}
