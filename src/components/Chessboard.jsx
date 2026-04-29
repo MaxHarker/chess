@@ -17,7 +17,7 @@ import blackQueen from '../assets/blackQueen.png'
 import blackKing from '../assets/blackKing.png'
 
 import move from '../assets/move.mp4'
-import capture from '../assets/capture.mp4'
+import capture from '../assets/capture2.mp4'
 
 import { validMoves, tryMove, legalMoves, isKingInCheck, findKing, hasLegalMoves } from '../logic/chessLogic'
 
@@ -40,8 +40,6 @@ const pieces = {
     }
 }
 
-const moveAudio = new Audio(move)
-const captureAudio = new Audio(capture)
 
 function Chessboard({ gameState, setGameState }) {
 
@@ -93,7 +91,7 @@ function Chessboard({ gameState, setGameState }) {
 
             if (newState) {
                 setGameState({ ...newState, selected: null })
-                gameState.board[row][col] ? captureAudio.play() : moveAudio.play()
+                gameState.board[row][col] ? new Audio(capture).play() : new Audio(move).play()
             }
             return
         }
@@ -143,7 +141,7 @@ function Chessboard({ gameState, setGameState }) {
 
         if (newState) {
             setGameState({ ...newState, selected: null })
-            gameState.board[toRow][toCol] ? captureAudio.play() : moveAudio.play()
+            gameState.board[toRow][toCol] ? new Audio(capture).play() : new Audio(move).play()
         }
     }
 
