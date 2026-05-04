@@ -13,6 +13,8 @@ import PromotionModal from './components/PromotionModal'
 
 import win from './assets/win.mp3'
 import loss from './assets/loss.mp3'
+import move from './assets/move.mp4'
+import capture from './assets/capture2.mp4'
 
 function App() {
     const navigate = useNavigate()
