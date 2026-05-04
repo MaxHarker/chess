@@ -10,6 +10,7 @@ import Chessboard from './components/Chessboard'
 import GameOver from './components/GameOver'
 import TitleScreen from './components/TitleScreen'
 import PromotionModal from './components/PromotionModal'
+import Matchmaking from './components/Matchmaking'
 
 import move from './assets/move.mp3'
 import capture from './assets/capture2.mp3'
@@ -20,6 +21,8 @@ function App() {
     const [gameState, setGameState] = useState(initialGameState)
     const [roomId, setRoomID] = useState(null)
     const [playerColor, setPlayerColor] = useState(null)
+    const [matchmaking, setMatchmaking] = useState(null)
+    const [countdown, setCountdown] = useState(null)
 
     useEffect(() => {
         if (!roomId) return
@@ -40,9 +43,22 @@ function App() {
             setGameState(state)
         })
 
-        socket.on('gameStart', ({ gameState }) => {
-            console.log('Game started!')
+        socket.on('gameStart', ({ gameState, startTime }) => {
+            console.log("Game starting!")
             setGameState(gameState)
+            setMatchmaking('starting')
+
+            const interval = setInterval(() => {
+                const secondsLeft = Math.ceil((startTime - Date.now()) / 1000)
+
+                if (secondsLeft <= 0) {
+                    clearInterval(interval)
+                    setCountdown(0)
+                    setMatchmaking(null)
+                } else {
+                    setCountdown(secondsLeft)
+                }
+            }, 100)
         })
 
         socket.on('moveMade', ({ type }) => {
@@ -57,6 +73,7 @@ function App() {
             socket.off('gameJoined')
             socket.off('gameState')
             socket.off('gameStart')
+            socket.off('moveMade')
         }
     }, [roomId])
 
@@ -82,7 +99,7 @@ function App() {
         <Routes>
             <Route
                 path="/"
-                element={<TitleScreen setRoomID={setRoomID} />}
+                element={<TitleScreen setRoomID={setRoomID} setMatchmaking={setMatchmaking} />}
             />
 
             <Route
@@ -96,6 +113,8 @@ function App() {
                             roomId={roomId}
                             playerColor={playerColor}
                         />
+
+                        {matchmaking && <Matchmaking state={matchmaking} countdown={countdown} onCancel={handleRestart} />}
 
                         {(gameState.status === 'checkmate' || gameState.status === 'stalemate') && (
                             <GameOver 
