@@ -22,7 +22,7 @@ export const initialGameState = {
     selected: null,
     // row, col, moves -- currently selected piece and its legal moves
 
-    status: 'playing',
+    status: 'waiting', // waiting, playing, checkmate, stalemate
 
     pendingPromotion: null
 }

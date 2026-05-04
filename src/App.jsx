@@ -1,7 +1,10 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { initialGameState } from './logic/initialGameState'
-import { hasLegalMoves, isKingInCheck } from './logic/chessLogic'
+import { initialGameState } from './logic/initialGameState.js'
+import { hasLegalMoves, isKingInCheck } from './logic/chessLogic.js'
+
+import { io } from 'socket.io-client'
+const socket = io('http://localhost:3001')
 
 import Chessboard from './components/Chessboard'
 import GameOver from './components/GameOver'
@@ -12,62 +15,71 @@ import win from './assets/win.mp3'
 import loss from './assets/loss.mp3'
 
 function App() {
+    const navigate = useNavigate()
+
     const [gameState, setGameState] = useState(initialGameState)
-    const winAudio = new Audio(win)
-    const lossAudio = new Audio(loss)
+    const [roomId, setRoomID] = useState(null)
+    const [playerColor, setPlayerColor] = useState(null)
 
     useEffect(() => {
-        if (gameState.status !== 'playing') return
+        if (!roomId) return
 
-        const turn = gameState.turn
-
-        const hasMoves = hasLegalMoves(turn, gameState)
-        const inCheck = isKingInCheck(turn, gameState)
-
-        if (!hasMoves && inCheck) {
-            setGameState(prev => ({
-                ...prev,
-                status: 'checkmate'
-            }))
-            turn === 'white' ? lossAudio.play() : winAudio.play()
+        const handleConnect = () => {
+            socket.emit('joinGame', roomId)
+            console.log(`Joined room ${roomId}`)
         }
 
-        if (!hasMoves && !inCheck) {
-            setGameState(prev => ({
-                ...prev,
-                status: 'stalemate'
-            }))
+        socket.on('connect', handleConnect)
+
+        socket.on('gameJoined', ({ color }) => {
+            setPlayerColor(color)
+            console.log(`You are playing as ${color}`)
+        })
+
+        socket.on('gameState', (state) => {
+            setGameState(state)
+        })
+
+        socket.on('gameStart', ({ gameState }) => {
+            console.log('Game started!')
+            setGameState(gameState)
+        })
+
+        if (socket.connected) handleConnect()
+
+        return () => {
+            socket.off('connect', handleConnect)
+            socket.off('gameJoined')
+            socket.off('gameState')
+            socket.off('gameStart')
         }
-    }, [gameState.board, gameState.turn])
-
-    const restartGame = () => {
-        setGameState(initialGameState)
-    }
-
-    const isGameOver =
-        gameState.status === 'checkmate' ||
-        gameState.status === 'stalemate'
+    }, [roomId])
 
     function handlePromotion(piece) {
-        const newBoard = gameState.board.map(r => r.slice())
-        newBoard[gameState.pendingPromotion.row][gameState.pendingPromotion.col] = `${gameState.pendingPromotion.color}_${piece}`
-        setGameState(prev => ({
-            ...prev,
-            board: newBoard,
-            pendingPromotion: null,
-            turn: prev.turn === 'white' ? 'black' : 'white',
-        }))
+        socket.emit('promotePawn', {
+            roomId,
+            piece
+        })
+    }
+
+    function handleRestart() {
+        socket.disconnect()
+        socket.connect()
+
+        setGameState(initialGameState)
+        setRoomID(null)
+        setPlayerColor(null)
+
+        navigate('/')
     }
 
     return (
         <Routes>
-            {/* 🎬 Title Screen */}
             <Route
                 path="/"
-                element={<TitleScreen />}
+                element={<TitleScreen setRoomID={setRoomID} />}
             />
 
-            {/* ♟️ Game Screen */}
             <Route
                 path="/game"
                 element={
@@ -75,21 +87,26 @@ function App() {
                         <Chessboard
                             gameState={gameState}
                             setGameState={setGameState}
+                            socket={socket}
+                            roomId={roomId}
+                            playerColor={playerColor}
                         />
 
-                        {isGameOver && (
-                            <GameOver
-                                status={gameState.status}
-                                onRestart={restartGame}
+                        {(gameState.status === 'checkmate' || gameState.status === 'stalemate') && (
+                            <GameOver 
+                                status={gameState.status} 
+                                winner={gameState.winner == playerColor ? 'win' : 'loss'}
+                                onRestart={handleRestart}
                             />
                         )}
 
-                        {gameState.pendingPromotion && (
-                            <PromotionModal
-                                color={gameState.pendingPromotion.color}
-                                onSelect={handlePromotion}
-                            />
-                        )}
+                        {gameState.pendingPromotion &&
+                            gameState.pendingPromotion.color === playerColor && (
+                                <PromotionModal
+                                    color={gameState.pendingPromotion.color}
+                                    onSelect={handlePromotion}
+                                />
+                            )}
                     </div>
                 }
             />

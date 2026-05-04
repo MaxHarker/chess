@@ -83,3 +83,42 @@
         opacity: 1;
     }
 }
+
+/* WIN STATE */
+.game-over-modal.win {
+    background: linear-gradient(145deg, #e6ffe6, #c8f7c8);
+    border: 1px solid rgba(0, 150, 0, 0.2);
+}
+
+.game-over-modal.win h1 {
+    color: #0a7a0a;
+}
+
+/* LOSS STATE */
+.game-over-modal.loss {
+    background: linear-gradient(145deg, #ffe6e6, #f7c8c8);
+    border: 1px solid rgba(150, 0, 0, 0.2);
+}
+
+.game-over-modal.loss h1 {
+    color: #7a0a0a;
+}
+
+/* DRAW */
+.game-over-modal.draw {
+    background: linear-gradient(145deg, #f0f0f0, #dcdcdc);
+}
+
+.result-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.result-text.win {
+    color: #0a7a0a;
+}
+
+.result-text.loss {
+    color: #7a0a0a;
+}
