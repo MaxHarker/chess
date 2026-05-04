@@ -4,7 +4,7 @@ import { initialGameState } from './logic/initialGameState.js'
 import { hasLegalMoves, isKingInCheck } from './logic/chessLogic.js'
 
 import { io } from 'socket.io-client'
-const socket = io('http://localhost:3001')
+const socket = io('https://chess-server-imx5.onrender.com')
 
 import Chessboard from './components/Chessboard'
 import GameOver from './components/GameOver'
