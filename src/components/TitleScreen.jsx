@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import './TitleScreen.css'
 
-function TitleScreen({ setRoomID, setMatchmaking }) {
+function TitleScreen({ handleConnect }) {
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -13,15 +13,10 @@ function TitleScreen({ setRoomID, setMatchmaking }) {
         <div className="title-screen">
             <h1>Chess</h1>
 
-            <button onClick={() => {
-                const newRoomID = 'test-room'
-                setRoomID(newRoomID)
-                setMatchmaking('searching')
-                navigate('/game')
-            }}>
+            <button onClick={handleConnect}>
                 Start Game
             </button>
-            <h3>Version 1.1.5</h3>
+            <h3>Version 1.1.6</h3>
         </div>
     )
 }

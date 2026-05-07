@@ -25,18 +25,10 @@ function App() {
     const [countdown, setCountdown] = useState(null)
 
     useEffect(() => {
-        if (!roomId) return
-
-        const handleConnect = () => {
-            socket.emit('joinGame', roomId)
-            console.log(`Joined room ${roomId}`)
-        }
-
-        socket.on('connect', handleConnect)
-
-        socket.on('gameJoined', ({ color }) => {
+        socket.on('matchFound', ({ roomId, color }) => {
+            setRoomID(roomId)
             setPlayerColor(color)
-            console.log(`You are playing as ${color}`)
+            console.log(`Match found! Room ID: ${roomId}, You are playing as ${color}`)
         })
 
         socket.on('gameState', (state) => {
@@ -66,11 +58,8 @@ function App() {
             audio.play()
         })
 
-        if (socket.connected) handleConnect()
-
         return () => {
             socket.off('connect', handleConnect)
-            socket.off('gameJoined')
             socket.off('gameState')
             socket.off('gameStart')
             socket.off('moveMade')
@@ -95,11 +84,17 @@ function App() {
         navigate('/')
     }
 
+    function handleConnect() {
+        socket.emit('findMatch')
+        setMatchmaking('searching')
+        navigate('/game')
+    }
+
     return (
         <Routes>
             <Route
                 path="/"
-                element={<TitleScreen setRoomID={setRoomID} setMatchmaking={setMatchmaking} />}
+                element={<TitleScreen handleConnect={handleConnect} />}
             />
 
             <Route
