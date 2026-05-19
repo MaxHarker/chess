@@ -1,29 +1,61 @@
 .title-screen {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    min-height: 100dvh;
+
     display: flex;
     flex-direction: column;
-
     align-items: center;
-    justify-content: center;
+
+    justify-content: space-between;
 
     background: #333333;
     color: white;
 
     animation: fadeIn 0.5s ease-out;
+
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
+.title-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    justify-content: center;
+    flex: 1;
+
+    transform: translateY(-5vh);
+}
+
+/* Title */
 .title-screen h1 {
-    font-size: 100px;
-    margin-bottom: 50px;
+    font-size: clamp(80px, 10vw, 100px);
+    margin-bottom: 40px;
+
     font-family: "Playfair Display", serif;
+    text-align: center;
 }
 
-.title-screen button {
-    margin-top: 20px;
-    padding: 12px 24px;
+/* Button container */
+.title-screen-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-    font-size: 16px;
+    gap: 25px;
+
+    width: 75%;
+}
+
+/* Main buttons */
+.title-screen button {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 12px 40px;
+
+    font-size: clamp(16px, 2vw, 20px);
     cursor: pointer;
 
     border: none;
@@ -39,16 +71,37 @@
     transform: scale(1.05);
 }
 
-.title-screen h3 {
-    position: absolute;
-    bottom: 30px;
-    font-family: "Playfair Display", serif;
-    color: #cccccc;
+/* Guest button */
+.guest-button {
+    margin-top: 5px;
+
+    background: none !important;
+    border: none;
+
+    padding: 0 !important;
+
+    color: #cccccc !important;
+
+    font-size: 15px;
+    font-weight: normal;
+
+    cursor: pointer;
+
+    text-decoration: underline;
+
+    transition: color 0.15s ease, transform 0.15s ease;
 }
 
-@media (max-width: 600px) {
-    .title-screen {
-        justify-content: flex-start;
-        padding-top: 100px;
-    }
+.guest-button:hover {
+    color: white !important;
+    transform: scale(1.03);
+}
+
+/* Version text */
+.title-screen h3 {
+    margin-top: auto;
+
+    font-family: "Playfair Display", serif;
+    color: #cccccc;
+    text-align: center;
 }

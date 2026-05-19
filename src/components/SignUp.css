@@ -1,0 +1,138 @@
+.signup-page {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background: #333333;
+    color: white;
+
+    animation: fadeIn 0.5s ease-out;
+}
+
+.signup-page h1 {
+    font-size: 64px;
+    margin-bottom: 30px;
+    font-family: "Playfair Display", serif;
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+
+    width: 320px;
+    padding: 35px;
+
+    background: #444444;
+
+    border-radius: 18px;
+
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.signup-form input {
+    margin-bottom: 18px;
+    padding: 14px 16px;
+
+    font-size: 16px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #555555;
+    color: white;
+
+    outline: none;
+
+    transition: background 0.15s ease,
+                transform 0.15s ease;
+}
+
+.signup-form input::placeholder {
+    color: #cccccc;
+}
+
+.signup-form input:focus {
+    background: #666666;
+    transform: scale(1.02);
+}
+
+.signup-form button {
+    margin-top: 10px;
+    padding: 14px;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    border: none;
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    background: white;
+    color: black;
+
+    transition: transform 0.15s ease,
+                background 0.15s ease;
+}
+
+.signup-form button:hover {
+    transform: scale(1.03);
+    background: #f0f0f0;
+}
+
+.signup-error {
+    color: red;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+    .signup-page {
+        justify-content: flex-start;
+        padding-top: 100px;
+    }
+
+    .signup-form {
+        width: 85%;
+        padding: 25px;
+    }
+
+    .signup-page h1 {
+        font-size: 48px;
+    }
+}
+
+.back-button {
+    margin-top: 20px;
+    padding: 12px 28px;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    border: 2px solid white;
+    border-radius: 10px;
+
+    background: transparent;
+    color: white;
+
+    cursor: pointer;
+
+    transition: background 0.15s ease,
+                color 0.15s ease,
+                transform 0.15s ease;
+}
+
+.back-button:hover {
+    background: white;
+    color: black;
+
+    transform: scale(1.03);
+}
+
+.back-button:active {
+    transform: scale(0.98);
+}

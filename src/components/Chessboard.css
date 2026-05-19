@@ -12,17 +12,11 @@ body {
 .chessboard {
     display: grid;
 
-    width: 100%;
-    max-width: 100%;
+    width: min(95vw, 550px);
     aspect-ratio: 1 / 1;
 
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-}
 
-@media (min-width: 768px) {
-    .chessboard {
-        max-width: 500px; /* 👈 control desktop size here */
-    }
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }

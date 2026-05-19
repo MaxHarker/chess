@@ -1,22 +1,28 @@
-import { useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
 import './TitleScreen.css'
 
-function TitleScreen({ handleConnect }) {
-    const navigate = useNavigate()
-
-    useEffect(() => {
-        console.log("ROUTE CHANGE: HOME")
-    }, [])
-
+function TitleScreen({ navigateLogin, navigateSignUp, navigateGuest }) {
     return (
         <div className="title-screen">
-            <h1>Chess</h1>
+            <div className = "title-content">
+                <h1>Chess</h1>
+                <div className="title-screen-buttons">
+                    <button onClick={navigateLogin}>
+                        Log In
+                    </button>
 
-            <button onClick={handleConnect}>
-                Start Game
-            </button>
-            <h3>Version 1.1.7</h3>
+                    <button onClick={navigateSignUp}>
+                        Sign Up
+                    </button>
+
+                    <button 
+                        className="guest-button"
+                        onClick={navigateGuest}
+                    >
+                        Continue as Guest
+                    </button>
+                </div>
+            </div>
+            <h3>Version 1.2.0</h3>
         </div>
     )
 }

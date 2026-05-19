@@ -5,10 +5,13 @@ import { hasLegalMoves, isKingInCheck } from './logic/chessLogic.js'
 
 import { io } from 'socket.io-client'
 const socket = io('https://chess-server-imx5.onrender.com')
+//const socket = io('http://localhost:3001')
 
 import Chessboard from './components/Chessboard'
 import GameOver from './components/GameOver'
 import TitleScreen from './components/TitleScreen'
+import Login from './components/Login'
+import SignUp from './components/SignUp'
 import PromotionModal from './components/PromotionModal'
 import Matchmaking from './components/Matchmaking'
 
@@ -59,12 +62,12 @@ function App() {
         })
 
         return () => {
-            socket.off('connect', handleConnect)
+            socket.off('matchFound')
             socket.off('gameState')
             socket.off('gameStart')
             socket.off('moveMade')
         }
-    }, [roomId])
+    }, [])
 
     function handlePromotion(piece) {
         socket.emit('promotePawn', {
@@ -90,11 +93,66 @@ function App() {
         navigate('/game')
     }
 
+    function navigateLogin() {
+        navigate('/login')
+    }
+
+    function navigateSignUp() {
+        navigate('/signup')
+    }
+
+    function navigateGuest() {
+        navigate('/game')
+        handleConnect()
+    }
+
+    function navigateBack() {
+        navigate('/')
+    }
+
+    function handleSignUp(username, password, email) {
+        return new Promise((resolve) => {
+            socket.emit('signUp', { username, password, email }, (response) => {
+                if (response.success) {
+                    console.log('Sign up successful!')
+                    handleConnect()
+                    resolve(null)
+                } else {
+                    console.log('Sign up failed:', response.message)
+                    resolve(response.message)
+                }
+            })
+        })
+    }
+
+    function handleLogin(username, password) {
+        return new Promise((resolve) => {
+            socket.emit('login', { username, password }, (response) => {
+                if (response.success) {
+                    console.log('Login successful!')
+                    handleConnect()
+                    resolve(null)
+                } else {
+                    console.log('Login failed:', response.message)
+                    resolve(response.message)
+                }
+            })
+        })
+    }
+    
     return (
         <Routes>
             <Route
                 path="/"
-                element={<TitleScreen handleConnect={handleConnect} />}
+                element={<TitleScreen navigateLogin={navigateLogin} navigateSignUp={navigateSignUp} navigateGuest={navigateGuest} />}
+            />
+            <Route
+                path="/login"
+                element={<Login handleLogin={handleLogin} navigateBack={navigateBack}/>}
+            />
+            <Route
+                path="/signup"
+                element={<SignUp handleSignUp={handleSignUp} navigateBack={navigateBack}/>}
             />
 
             <Route
