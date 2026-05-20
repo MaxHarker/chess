@@ -1,6 +1,5 @@
 import './Chessboard.css'
 import Square from './Square'
-import { useState } from 'react'
 
 import {
     legalMoves,
@@ -30,7 +29,6 @@ function Chessboard({
 
         const piece = gameState.board[row][col]
 
-        // deselect
         if (
             gameState.selected &&
             gameState.selected.row === row &&
@@ -40,7 +38,6 @@ function Chessboard({
             return
         }
 
-        // select piece
         if (piece) {
             const [color, type] = piece.split('_')
 
@@ -55,7 +52,6 @@ function Chessboard({
             }
         }
 
-        // attempt move → 🔥 SERVER
         if (gameState.selected) {
             const from = [
                 gameState.selected.row,
@@ -118,19 +114,41 @@ function Chessboard({
 
         setGameState({ ...gameState, selected: null })
     }
+    
+    const displayBoard =
+    playerColor === 'black'
+        ? [...gameState.board]
+              .reverse()
+              .map(row => [...row].reverse())
+        : gameState.board
 
     return (
         <div className="chessboard">
-            {gameState.board.map((row, rowIndex) =>
-                row.map((piece, colIndex) => {
-                    const isLight = (rowIndex + colIndex) % 2 === 0
+            {displayBoard.map((row, displayRow) =>
+                row.map((piece, displayCol) => {
+
+                    const rowIndex =
+                        playerColor === 'black'
+                            ? 7 - displayRow
+                            : displayRow
+
+                    const colIndex =
+                        playerColor === 'black'
+                            ? 7 - displayCol
+                            : displayCol
+
+                    const isLight =
+                        (rowIndex + colIndex) % 2 === 0
 
                     const isHighlighted = highlights.some(
-                        ([r, c]) => r === rowIndex && c === colIndex
+                        ([r, c]) =>
+                            r === rowIndex &&
+                            c === colIndex
                     )
 
                     const isCapture =
-                        piece && !piece.startsWith(gameState.turn)
+                        piece &&
+                        !piece.startsWith(gameState.turn)
 
                     const isCheckSquare =
                         inCheck &&
